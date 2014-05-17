@@ -18,6 +18,8 @@ W2 = reshape(theta(hiddenSize*visibleSize+1:2*hiddenSize*visibleSize), visibleSi
 b1 = theta(2*hiddenSize*visibleSize+1:2*hiddenSize*visibleSize+hiddenSize);
 b2 = theta(2*hiddenSize*visibleSize+hiddenSize+1:end);
 
+%beta = 0; 
+
 % Cost and gradient variables (your code needs to compute these values). 
 % Here, we initialize them to zeros. 
 cost = 0;
@@ -42,20 +44,34 @@ b2grad = zeros(size(b2));
 % the gradient descent update to W1 would be W1 := W1 - alpha * W1grad, and similarly for W2, b1, b2. 
 % 
 
+% Feed Forward
+z2 = W1*data + b1;
+a2 = sigmoid(z2);
+z3 = W2*a2 + b2;
+a3 = sigmoid(z3);
 
+% Squared error of cost
+cost = .5*((a3 - data).^2);
+cost = sum(cost(:));
 
+% Weight Decay
+cost = cost + (lambda/2)*(weightDecay(W1) + weightDecay(W2));
 
+% Sparsity
+sparsities = sum(a2')'/length(a2);
+kullbackLeibler = sparsityParam*(log(sparsityParam) - log(sparsities));
+kullbackLeibler += (1 - sparsityParam)*(log(1 - sparsityParam) - log(1 - sparsities));
+cost = cost + beta*sum(kullbackLeibler(:));
 
+% Backpropagate
+delta3 = -(data - a3).*sigmoidDeriv(a3);
+delta2 = (transpose(W2)*delta3 + sparsityTerm).*sigmoidDeriv(a2);
 
-
-
-
-
-
-
-
-
-
+% Partial Derivatives
+W1grad = W1grad + delta2*transpose(data) + lambda*W1;
+W2grad = W2grad + delta3*transpose(a2) + lambda*W2;
+b1grad = b1grad + delta2*ones(length(delta3),1);
+b2grad = b2grad + delta3*ones(length(delta3),1);
 
 
 
@@ -75,7 +91,14 @@ end
 % column) vector (say (z1, z2, z3)) and returns (f(z1), f(z2), f(z3)). 
 
 function sigm = sigmoid(x)
-  
-    sigm = 1 ./ (1 + exp(-x));
+  sigm = 1 ./ (1 + exp(-x));
 end
 
+function deriv = sigmoidDeriv(x)
+  deriv = x .* (1-x);
+end
+
+function weight = weightDecay(x)
+  weight = x.^2;
+  weight = sum(weight(:));
+end
