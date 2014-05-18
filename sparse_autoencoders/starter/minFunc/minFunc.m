@@ -17,16 +17,16 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %   - 'cg': Non-Linear Conjugate Gradient
 %       (uses only previous step and a vector beta)
 %   - 'scg': Scaled Non-Linear Conjugate Gradient
-%       (uses previous step and a vector beta, 
+%       (uses previous step and a vector beta,
 %           and Hessian-vector products to initialize line search)
 %   - 'pcg': Preconditionined Non-Linear Conjugate Gradient
 %       (uses only previous step and a vector beta, preconditioned version)
 %   - 'lbfgs': Quasi-Newton with Limited-Memory BFGS Updating
-%       (default: uses a predetermined nunber of previous steps to form a 
+%       (default: uses a predetermined nunber of previous steps to form a
 %           low-rank Hessian approximation)
 %   - 'newton0': Hessian-Free Newton
 %       (numerically computes Hessian-Vector products)
-%   - 'pnewton0': Preconditioned Hessian-Free Newton 
+%   - 'pnewton0': Preconditioned Hessian-Free Newton
 %       (numerically computes Hessian-Vector products, preconditioned
 %       version)
 %   - 'qnewton': Quasi-Newton Hessian approximation
@@ -151,7 +151,7 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %           1: SR1 (when it is positive-definite, otherwise BFGS)
 %           2: Hoshino
 %           3: Self-Scaling BFGS
-%           4: Oren's Self-Scaling Variable Metric method 
+%           4: Oren's Self-Scaling Variable Metric method
 %           5: McCormick-Huang asymmetric update
 %       Damped - use damped BFGS update (default: 1)
 %   newton0/pnewton0:
@@ -181,7 +181,7 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %           1: Polak-Ribiere
 %           2: Hestenes-Stiefel (not supported for pcg)
 %           3: Gilbert-Nocedal
-%       HvFunc (for scg only)- user-supplied function that returns Hessian-vector 
+%       HvFunc (for scg only)- user-supplied function that returns Hessian-vector
 %           products
 %           (by default, these are computed numerically using autoHv)
 %           HvFunc should have the following interface:
@@ -239,6 +239,7 @@ end
     DerivativeCheck,Damped,HvFunc,bbType,cycle,...
     HessianIter,outputFcn,useMex,useNegCurv,precFunc] = ...
     minFunc_processInputOptions(options);
+useMex = 0;
 
 if isfield(options, 'logfile')
     logfile = options.logfile;
@@ -740,7 +741,7 @@ for i = 1:maxIter
                 HvFun = HvFunc;
                 HvArgs = {x,varargin{:}};
             end
-            
+
             if useNegCurv
                 [d,cgIter,cgRes,negCurv] = conjGrad([],-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs,HvFun,HvArgs);
             else
@@ -1080,7 +1081,7 @@ for i = 1:maxIter
         end
     end
 
-    
+
     % Output Function
     if ~isempty(outputFcn)
         callOutput(outputFcn,x,'iter',i,funEvals,f,t,gtd,g,d,sum(abs(g)),varargin{:});
@@ -1142,4 +1143,3 @@ if ~isempty(outputFcn)
 end
 
 end
-
