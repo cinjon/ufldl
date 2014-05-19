@@ -127,7 +127,8 @@ bbType = getOpt(o,'BBTYPE',0);
 cycle = getOpt(o,'CYCLE',3);
 HessianIter = getOpt(o,'HESSIANITER',HessianIter);
 outputFcn = getOpt(o,'OUTPUTFCN',[]);
-useMex = getOpt(o,'USEMEX',1);
+useMex = getOpt(o,'USEMEX',0); %Turning this off because it's causing
+                               %problems to use mex files in Octave
 useNegCurv = getOpt(o,'USENEGCURV',1);
 precFunc = getOpt(o,'PRECFUNC',[]);
 end

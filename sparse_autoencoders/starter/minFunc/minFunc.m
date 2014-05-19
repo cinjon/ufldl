@@ -239,7 +239,6 @@ end
     DerivativeCheck,Damped,HvFunc,bbType,cycle,...
     HessianIter,outputFcn,useMex,useNegCurv,precFunc] = ...
     minFunc_processInputOptions(options);
-useMex = 0;
 
 if isfield(options, 'logfile')
     logfile = options.logfile;

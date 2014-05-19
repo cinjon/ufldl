@@ -45,9 +45,9 @@ b2grad = zeros(size(b2));
 %
 
 % Feed Forward
-z2 = W1*data + b1;
+z2 = W1*data + repmat(b1, 1, size(data, 2));
 a2 = sigmoid(z2);
-z3 = W2*a2 + b2;
+z3 = W2*a2 + repmat(b2, 1, size(data, 2));
 a3 = sigmoid(z3);
 
 % Squared error of cost
@@ -55,18 +55,18 @@ cost = .5*((a3 - data).^2);
 cost = sum(cost(:)) / size(cost, 2);
 
 % Weight Decay
-cost += (lambda/2)*(weightDecay(W1) + weightDecay(W2));
+cost = cost + (lambda/2)*(weightDecay(W1) + weightDecay(W2));
 
 % Sparsity
 if sparsityParam > 0
   sparsities = sum(a2, 2)/size(a2, 2);
-  kullbackLeibler = sparsityParam*log(sparsityParam ./ sparsities);
-  kullbackLeibler += (1 - sparsityParam)*log((1 - sparsityParam) ./ (1 - sparsities));
-  cost += beta*sum(kullbackLeibler(:));
+  kullbackLeibler = klTerm(sparsityParam, sparsities) + \
+                    klTerm(1-sparsityParam, 1-sparsities);
+  cost = cost + beta*sum(kullbackLeibler(:));
 end
 
 % Backpropagate
-delta3 = -(data - a3).*sigmoidDeriv(a3);
+delta3 = -(data - a3) .* sigmoidDeriv(a3);
 delta2 = transpose(W2)*delta3 .* sigmoidDeriv(a2);
 if sparsityParam > 0
   sparsityTerm = beta*((-sparsityParam ./ sparsities) + ((1-sparsityParam) \
@@ -107,4 +107,8 @@ end
 function weight = weightDecay(x)
   weight = x.^2;
   weight = sum(weight(:));
+end
+
+function term = klTerm(x, sparsities)
+  term = x * log(x ./  sparsities);
 end
