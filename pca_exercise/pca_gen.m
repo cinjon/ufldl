@@ -17,7 +17,7 @@ display_network(x(:,randsel));
 % -------------------- YOUR CODE HERE --------------------
 
 avg = mean(x, 1);
-y = x - repmat(avg, size(x, 1), 1);
+x = x - repmat(avg, size(x, 1), 1);
 
 %%================================================================
 %% Step 1a: Implement PCA to obtain xRot
@@ -27,7 +27,7 @@ y = x - repmat(avg, size(x, 1), 1);
 
 % -------------------- YOUR CODE HERE --------------------
 xRot = zeros(size(x)); % You need to compute this
-sigma = y * y' / size(x, 2);
+sigma = x * x' / size(x, 2);
 [u,s,v] = svd(sigma);
 xRot = u' * x;
 
@@ -43,7 +43,7 @@ xRot = u' * x;
 
 % -------------------- YOUR CODE HERE --------------------
 covar = zeros(size(x, 1)); % You need to compute this
-covar = s;
+covar = xRot * xRot' / size(xRot, 2);
 
 % Visualise the covariance matrix. You should see a line across the
 % diagonal against a blue background.
@@ -57,9 +57,10 @@ imagesc(covar);
 
 % -------------------- YOUR CODE HERE --------------------
 k = 0; % Set k accordingly
+threshold = .9;
 eigenvalues = s * ones(size(s, 1), 1);
 for i=1:size(eigenvalues),
-  if sum(eigenvalues(1:i))/sum(eigenvalues) > .99
+  if sum(eigenvalues(1:i))/sum(eigenvalues) > threshold
     break
   end
 end
@@ -81,6 +82,7 @@ k = i;
 
 % -------------------- YOUR CODE HERE --------------------
 xHat = zeros(size(x));  % You need to compute this
+xHat = u(:, 1:k) * u(:, 1:k)' * x;
 
 
 % Visualise the data, and compare it to the raw data
@@ -100,6 +102,7 @@ display_network(x(:,randsel));
 
 epsilon = 0.1;
 xPCAWhite = zeros(size(x));
+xPCAWhite = diag(1./sqrt(diag(s) + epsilon)) * u' * x;
 
 % -------------------- YOUR CODE HERE --------------------
 
@@ -121,6 +124,8 @@ xPCAWhite = zeros(size(x));
 
 % -------------------- YOUR CODE HERE --------------------
 
+covar = xPCAWhite * xPCAWhite' / size(xPCAWhite, 2);
+
 % Visualise the covariance matrix. You should see a red line across the
 % diagonal against a blue background.
 figure('name','Visualisation of covariance matrix');
@@ -133,8 +138,7 @@ imagesc(covar);
 %  that whitening results in, among other things, enhanced edges.
 
 xZCAWhite = zeros(size(x));
-
-% -------------------- YOUR CODE HERE --------------------
+xZCAWhite = U * xPCAWhite;
 
 % Visualise the data, and compare it to the raw data.
 % You should observe that the whitened images have enhanced edges.
