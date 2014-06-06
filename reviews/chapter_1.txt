@@ -1,0 +1,19 @@
+Sparse AutoEncoder Chapter:
+
+1. Neural Networks
+-- Well-known interpretation as neurons connected in a directed graph.
+-- Multiple terms in the cost function, including the average norm difference and the weight decay (regularization) term. Later, we also introduce the Kullbach-Liebler Divergence.
+-- Algorithm at large looks like:
+--- Perform feed-forward to get the activations and weights of the network
+--- There are still errors in there now but we aren't sure what caused them. So let's take the derivative with respect to each node in the last layer to get the error terms. Then back propagate those errors terms according to the weighted activations. This is the gradient term and we perform some algorithm, e.g. gradient descent, on it to crush the errors.
+--- L-bfgs and confugate gradient descent are both much faster than normal gradient descent because they also tune the learning parameter while chugging along at the error rate.
+
+2. Autoencoder
+-- Neural network where the output function is the identity function. Elegant, useful.
+-- Multiple methods to make this not _just_ the identity function.
+-- One way is to have the hidden units be much less in quantity than the input units. This will encourage data compression into the hidden layer.
+-- Another method is to enforce a constraint like sparsity. Sparsity is having the number of activations be low (i.e. neurons fire less often). In particular, it holds that the average activation for each hidden layer be a small value like .05.
+-- We can perform sparsity by adding kullbach-liebler to the cost function and _then_ doing gradient descent (or w/e) algo.
+
+3. Visualizing an Autoencoder
+-- Apply some constraint, such as the norm, to the autoencoder weight values in order to yield some distribution of pixels. Use these pixels for each hidden layer to view what each node is testing for.
