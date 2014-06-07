@@ -1,0 +1,15 @@
+Vectorization Chapter:
+
+1. Vectorization
+-- Take advantage of all the research and engineering that's gone into numerical computing
+-- Try to never use explicit for-loops. Instead always use the highly optimized functions designed to quickly do numerical computing such as that with matrices.
+-- The time gain from doing this is an order of magnitude or two.
+
+2. Examples
+-- Forward Propagation:
+   z2 = W1 * x + repmat(b1,1,m);
+   a2 = f(z2);
+   z3 = W2 * a2 + repmat(b2,1,m);
+   h = f(z3);
+-- Logistic Regression Gradient:
+   grad = x * (y- sigmoid(theta'*x))';
