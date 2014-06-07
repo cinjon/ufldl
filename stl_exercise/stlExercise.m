@@ -115,7 +115,7 @@ softmaxModel = struct;
 % trainLabels
 
 optionsSoftmax.maxIter = 100;
-softmaxModel = softmaxTrain(inputSize, numLabels, 1e-4, trainFeatures, \
+softmaxModel = softmaxTrain(hiddenSize, numLabels, 1e-4, trainFeatures, \
                             trainLabels, optionsSoftmax); #inputSize or
                                 #hiddenSize for the softmax param?
 
@@ -130,7 +130,6 @@ softmaxModel = softmaxTrain(inputSize, numLabels, 1e-4, trainFeatures, \
 % and softmaxModel
 
 [pred] = softmaxPredict(softmaxModel, testFeatures);
-acc = mean(labels(:) == pred(:));
 
 %% -----------------------------------------------------
 
