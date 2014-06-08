@@ -1,0 +1,38 @@
+PCA Chapter:
+
+1. Background:
+-- It's a dimensionality reduction algorithm
+-- The principal directions of the data, i.e. the vectors of highest variance, are the leading eigenvectors of the covariance matrix given by 1/m * x * x'.
+-- We can now represent the eigenvectors as U, and so U' * x is x rotated onto this new basis. Note that U is orthogonal.
+
+2. Reducing the Dimension
+-- If we drop off later components of x_rot (x rotated by U), this corresponds to zeroing out the parts of the data with lower variance.
+-- PCA is accomplishing dimensionality reduction by finding the parts of the variance that are ~0 and just saying they're 0.
+-- Because U is orthogonal, we can recover an approximation to x by mutlipling U by the approximation to x_rot.
+-- This is all useful because we get to train on a lower dimensional dataset (hence faster) without compromising our data input much.
+-- PCA also requires that the features have ~0 mean and the different features have similar variances.
+   Most of the time, in natural datasets (speech / imagery / etc), the second characteristic is already fulfilled. We need to fulfill the first.
+
+3. How many components?
+-- We decide how many components to retain by the percentage of variance retained, which is equal to the percentage sum of the eigenvalues retained.
+-- Generally keep this above 99%.
+
+4. Whitening
+-- Closely related preprocessing step which makes the input less redundant so the features are less correlated and all have the same variance.
+-- A PCA-Whitened version of data would have uncorrelated components and unit variance.
+   One way to accomplish the latter is to divide x_rot by the square root of the respective eigenvalue.
+-- Now the data has covariance equal to the identity matrix I. (... why)
+--- OH!, it's because U is a diagonal matrix with just the eigenvalues (assumed above), then the product of that and the
+    diagonal matrix of 1/sqrt(eigen_i) will be I. So you're yielding that result.
+-- This is PCA Whitening
+
+5. ZCA Whitening
+-- Very similar to the above, except that it uses the observation that UU = I, so we can choose U (or any orthogonal matrix, but U here) s.t.
+   x_zcawhite = U * x_pcawhite.
+-- Out of all choices for R, this choice is most optimal for getting data as close as possible to the original input data
+-- Usually keep all of the vars in this one and don't reduce dimensionality. (... why)
+
+6. Regularization
+-- With both PCA and ZCA Whitening, we usually add a small amount of regularization to prevent zero-blowups and encourage smoothing.
+-- A note on biological processing is that zca whitening is close to how the retina processes images. Instead of transmitting every pizel sepearately,
+   the retina decorrelates ("on center, off surround / off center, on surround") similarly to what ZCA does. Less redundant representation image is produced.
