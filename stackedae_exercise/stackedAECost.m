@@ -61,58 +61,41 @@ groundTruth = full(sparse(labels, 1:M, 1));
 %                match exactly that of the size of the matrices in stack.
 %
 
-% stack{d}.s = delta, stack{d}.z = result, stack{d}.a = activation of result
+stackDepth = numel(stack);
+
+% vars{d}.s = delta, vars{d}.z = result, vars{d}.a = activation of result
+vars = cell(stackDepth+1);
 
 % Compute the forward activations
-stack{1}.a = data;
-for d = 1:numel(stack)
-    stack{d+1}.z = stack{d}.w * stack{d}.a + repmat(stack{d}.b, 1, \
-                                                  size(stack{d}.a, 2));
-    stack{d+1}.a = sigmoid(stack{d+1}.z);
+vars{1}.a = data;
+for d = 1:stackDepth
+    vars{d+1}.z = stack{d}.w * vars{d}.a + repmat(stack{d}.b, [1, size(vars{d}.a, 2)]);
+    vars{d+1}.a = sigmoid(vars{d+1}.z);
 end
 
 % Compute the vector of conditional probabilities, direct from softmaxCost calculation
-P = softmaxTheta * stack{numel(stack) + 1}.a;
-P = bsxfun(@minus, P, max(P));
-P = exp(P);
+P = softmaxTheta * vars{stackDepth + 1}.a;
+P = exp(bsxfun(@minus, P, max(P)));
 P = bsxfun(@rdivide, P, sum(P));
 
 % Compute the errors due to each node
-stack{numel(stack)+1}.s = -softmaxTheta' * (groundTruth - \
-                                        P) * \
-                         sigmoidDeriv(stack{numel(stack)}.a);
-for d = numel(stack):-1:3
-    stack{d}.s = stack{d}.w * stack{d+1}.s * sigmoidDeriv(stack{d}.a);
+vars{stackDepth+1}.s = -softmaxTheta' * (groundTruth - \
+                                        P) .* \
+                         sigmoidDeriv(vars{stackDepth+1}.a);
+for d = stackDepth:-1:2
+    vars{d}.s = stack{d}.w' * vars{d+1}.s .* sigmoidDeriv(vars{d}.a);
 end
 
 % Compute the partial derivatives
-for d = 1:numel(stack)
-    stackgrad{d}.w = stack{d+1}.s * stack{d}.a';
-    stackgrad{d}.b = stack{d+1}.s;
+for d = 1:stackDepth
+    stackgrad{d}.w = vars{d+1}.s * vars{d}.a' / numClasses;
+    stackgrad{d}.b = vars{d+1}.s * ones(size(vars{d+1}.s, 2), 1) / numClasses;
 end
 
-indicator_cost = groundTruth .* log(P);
-indicator_cost = -1/numCases * sum(indicator_cost(:));
-cost = indicator_cost + lambda/2 * sum((softmaxTheta.^2)(:)); % Weight decay
+indicator_cost = -1/numClasses * groundTruth(:)' * log(P(:));
+cost = indicator_cost + lambda/2 * sum(softmaxTheta(:) .^2); % Weight decay
 
-softmaxThetaGrad = -1/numCases * ((groundTruth - P) * stack{numel(stack)+1}.a') + (lambda * theta);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+softmaxThetaGrad = -1/numClasses * (groundTruth - P) * vars{stackDepth+1}.a' + lambda * softmaxTheta;
 
 % -------------------------------------------------------------------------
 
