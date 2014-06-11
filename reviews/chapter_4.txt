@@ -1,0 +1,16 @@
+Softmax Regression Chapter:
+
+Basics:
+-- Generalizes logistic regression to problems where the class labels can take on more than two values.
+-- In logistic regression, (t = theta) --> h_t(x) = 1/(1+exp(-t'*x)) and J(t) = -1/m * sum (y_i*log(h_t(x_i)) + (1-y_i)*(log(1-h_t(x_i))))
+-- In softmax, h_t(x_i) = 1/sum(exp(t_j'*x_i)) * matrix(exp(t_j'x_i)) and the cost function uses indicator vars
+
+Notable Properties:
+-- Overparameterized. You can subtract out a constant vector from theta and the class label probabilities are estimated the same.
+-- This implies that there isn't a unique minimum.
+-- It's still convex so gradient descent won't run into local optimum problems, but the Hessian's a no go because it's not invertible.
+-- Modify the cost function by adding weight decay and it now is no longer overparameterized (hence hessian invertible). It's also strictly convex.
+
+Softmax v Multiple Binary Classifiers:
+-- If your classes are mutually exclusive, build a softmax. An example is "indoor_scene, outdoor_forest_scene, outdoor_city_scene".
+-- If they aren't exclusive, e.g. "people_scene", "city_scene", "forest_scene", then k (=3) separate binary classifiers (like logistic regression) is a better choice.
