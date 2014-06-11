@@ -157,20 +157,8 @@ stackedAETheta = [ saeSoftmaxOptTheta ; stackparams ];
 %
 %
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+[cost, grad] = stackedAECost(stackedAETheta, inputSize, hiddenSizeL2, \
+                             numClasses, netconfig, lambda, trainData, trainLabels)
 
 % -------------------------------------------------------------------------
 
@@ -184,8 +172,8 @@ stackedAETheta = [ saeSoftmaxOptTheta ; stackparams ];
 
 % Get labelled test images
 % Note that we apply the same kind of preprocessing as the training set
-testData = loadMNISTImages('mnist/t10k-images-idx3-ubyte');
-testLabels = loadMNISTLabels('mnist/t10k-labels-idx1-ubyte');
+testData = loadMNISTImages('../mnistHelper/t10k-images-idx3-ubyte');
+testLabels = loadMNISTLabels('../mnistHelper/t10k-labels-idx1-ubyte');
 
 testLabels(testLabels == 0) = 10; % Remap 0 to 10
 
