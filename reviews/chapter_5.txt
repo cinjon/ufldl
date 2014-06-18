@@ -1,0 +1,9 @@
+Self Taught Learning Chapter:
+
+1. Overview
+-- If we can make algorithms that learn well from unlabeled data, which is very very easy to get, then we'd be better off than using just the sparse labeled data we have [me: given current approaches...].
+-- An approach is to first train an autoencoder using lots and lots of unlabeled data.
+-- Then either replace or concatenate the labeled inputs with the activations of the hidden layer [of those inputs] and use that in a supervised learning algorithm.
+
+2. A Warning on Preprocessing
+-- If you are going to preprocess with PCA or ZCA whitening or whatnot, be careful to continue to use the same preprocessing on further data. The algorithm wouldn't know how to make sense of the inputs otherwise.
