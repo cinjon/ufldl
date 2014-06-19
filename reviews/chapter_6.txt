@@ -1,0 +1,26 @@
+Deep Networks Chapter:
+
+1. Towards a Deep Neural Network
+-- Let's add layers to make the network more expressive
+-- Make sure that each layer is using a non-linear activation function, otherwise an extra layer doesn't contribute anything.
+-- There are functions which a k-layer network can represent well (polynomially) that a (k-1)-layer cannot (exponentially)
+-- On a biological level, cortical computations work somewhat like this in that visual images are processed in multiple stages (V1, then V2, etc)
+
+2. Problems with Deep Neural Networks
+-- Common methods used historically were to randomize the initial weights and to train it on a supervised algo using a labeled dataset. This didn't work well.
+-- One reason was that there isn't that much labeled data. That's a two-fold problem because it also means that the networks tended to overfit to what was available.
+-- This approach frequently hit local optima because gradient descent and the like don't work that well in this very non-convex setting.
+-- Another problem is called "The Diffusion of Gradients":
+   -- As the errors are backpropagated, they become too small to have their derivative contribute much if anything, so they don't learn anything
+   -- Closely related is a problem where if the last layer has enough neurons, it can sufficiently model the data, but it does it on corrupted input.
+
+3. Greedy Training
+-- Approach that has shown some efficacy is to train the layers of the network one at a time with the previous output layer being the new input.
+-- This works well because of the large amount of unlabeled data that can be fed through it and
+-- Better local optima conditions. Together, the unlabeled data and the greedy training build up ensure this.
+
+4. Greedy Stacked Autoencoders
+-- Can implement a stacked autoencoder using greedy training by building up the layers via an autoencoder with the previous layer as the input and the new layer as the hidden layer.
+-- Can then backpropagate with a softmax attached at the end.
+-- A nice advantage to doing this is that each layer tends to be a hierarchical build up on the previous layer, e.g.:
+   -- The first hidden layer might learn image edges, which the second one learns corners, and the third learns squares.
